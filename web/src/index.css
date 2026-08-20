@@ -278,6 +278,57 @@ button {
   align-items: center;
 }
 
+.discover-page__header {
+  width: 100%;
+  max-width: 360px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.discover-page__header h1 {
+  margin: 0;
+}
+
+.discover-grid {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-3);
+}
+
+.discover-grid__item {
+  position: relative;
+  aspect-ratio: 3 / 4;
+  border-radius: var(--radius-card);
+  overflow: hidden;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+.discover-grid__photo {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+}
+
+.discover-grid__gradient {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.6), transparent 50%);
+}
+
+.discover-grid__label {
+  position: absolute;
+  left: var(--space-2);
+  bottom: var(--space-2);
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
 .swipe-stack {
   position: relative;
   width: 100%;

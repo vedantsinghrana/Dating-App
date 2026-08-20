@@ -35,4 +35,25 @@ describe('DiscoverPage', () => {
     });
     expect(screen.getByText(/jordan/i)).toBeInTheDocument();
   });
+
+  it('switches to grid view and picking a tile brings it to the front of the stack', async () => {
+    const user = userEvent.setup();
+    render(
+      <MemoryRouter initialEntries={['/discover']}>
+        <App />
+      </MemoryRouter>,
+    );
+
+    await screen.findByText(/priya/i);
+    await user.click(screen.getByRole('radio', { name: /grid/i }));
+
+    const samTile = await screen.findByRole('button', { name: /sam, \d+/i });
+    await user.click(samTile);
+
+    expect(await screen.findByRole('radio', { name: /stack/i })).toHaveAttribute(
+      'aria-checked',
+      'true',
+    );
+    expect(screen.getByText(/sam/i)).toBeInTheDocument();
+  });
 });

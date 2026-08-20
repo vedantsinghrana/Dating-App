@@ -3,10 +3,12 @@ import { ApiError } from '../../api/client';
 import { cachePrompts } from '../../api/promptCache';
 import type { DiscoverResult, SwipeDirection } from '../../api/types';
 import { DEFAULT_RADIUS_KM, getDiscoverResults, swipe } from './discoveryApi';
+import { DiscoverGrid } from './DiscoverGrid';
 import { MatchCelebration } from './MatchCelebration';
 import { SwipeCard } from './SwipeCard';
 
 const PREFETCH_THRESHOLD = 2;
+type ViewMode = 'stack' | 'grid';
 
 export function DiscoverPage() {
   const [results, setResults] = useState<DiscoverResult[]>([]);
@@ -16,6 +18,7 @@ export function DiscoverPage() {
   const [error, setError] = useState<string | null>(null);
   const [pendingDirection, setPendingDirection] = useState<SwipeDirection | null>(null);
   const [match, setMatch] = useState<DiscoverResult | null>(null);
+  const [viewMode, setViewMode] = useState<ViewMode>('stack');
   const fetchingRef = useRef(false);
 
   const loadPage = useCallback(async (targetPage: number) => {
@@ -60,50 +63,83 @@ export function DiscoverPage() {
       });
   }
 
+  function handlePickFromGrid(userId: string) {
+    setResults((prev) => {
+      const picked = prev.find((r) => r.userId === userId);
+      if (!picked) return prev;
+      return [picked, ...prev.filter((r) => r.userId !== userId)];
+    });
+    setViewMode('stack');
+  }
+
   const visible = results.slice(0, 3);
   const canAct = visible.length > 0 && pendingDirection === null;
 
   return (
     <section className="page discover-page">
-      <h1>Discover</h1>
+      <div className="discover-page__header">
+        <h1>Discover</h1>
+        <div role="radiogroup" aria-label="View" className="theme-toggle">
+          {(['stack', 'grid'] as const).map((mode) => (
+            <button
+              key={mode}
+              type="button"
+              role="radio"
+              aria-checked={viewMode === mode}
+              className="theme-toggle__option"
+              data-active={viewMode === mode}
+              onClick={() => setViewMode(mode)}
+            >
+              {mode === 'stack' ? 'Stack' : 'Grid'}
+            </button>
+          ))}
+        </div>
+      </div>
       {error && <p className="form__error" role="alert">{error}</p>}
 
-      <div className="swipe-stack">
-        {visible.length === 0 && !loading && !error && (
-          <p className="page__todo">No one new nearby right now. Check back later.</p>
-        )}
-        {visible.map((result, index) => (
-          <SwipeCard
-            key={result.userId}
-            result={result}
-            isTop={index === 0}
-            depth={index}
-            forceDirection={index === 0 ? pendingDirection : null}
-            onSwiped={handleSwiped}
-          />
-        ))}
-      </div>
+      {results.length === 0 && !loading && !error && (
+        <p className="page__todo">No one new nearby right now. Check back later.</p>
+      )}
 
-      <div className="swipe-actions">
-        <button
-          type="button"
-          className="swipe-actions__button swipe-actions__button--pass"
-          aria-label="Pass"
-          disabled={!canAct}
-          onClick={() => setPendingDirection('PASS')}
-        >
-          ✕
-        </button>
-        <button
-          type="button"
-          className="swipe-actions__button swipe-actions__button--like"
-          aria-label="Like"
-          disabled={!canAct}
-          onClick={() => setPendingDirection('LIKE')}
-        >
-          ♥
-        </button>
-      </div>
+      {viewMode === 'grid' ? (
+        <DiscoverGrid results={results} onSelect={handlePickFromGrid} />
+      ) : (
+        <>
+          <div className="swipe-stack">
+            {visible.map((result, index) => (
+              <SwipeCard
+                key={result.userId}
+                result={result}
+                isTop={index === 0}
+                depth={index}
+                forceDirection={index === 0 ? pendingDirection : null}
+                onSwiped={handleSwiped}
+              />
+            ))}
+          </div>
+
+          <div className="swipe-actions">
+            <button
+              type="button"
+              className="swipe-actions__button swipe-actions__button--pass"
+              aria-label="Pass"
+              disabled={!canAct}
+              onClick={() => setPendingDirection('PASS')}
+            >
+              ✕
+            </button>
+            <button
+              type="button"
+              className="swipe-actions__button swipe-actions__button--like"
+              aria-label="Like"
+              disabled={!canAct}
+              onClick={() => setPendingDirection('LIKE')}
+            >
+              ♥
+            </button>
+          </div>
+        </>
+      )}
 
       {match && <MatchCelebration otherUser={match} onDismiss={() => setMatch(null)} />}
     </section>
