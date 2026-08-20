@@ -1,0 +1,44 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: dating-app-backend
+
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/dating_app}
+    username: ${DB_USERNAME:dating_app}
+    password: ${DB_PASSWORD:dating_app}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
+app:
+  jwt:
+    secret: ${JWT_SECRET:dev-only-change-me-dev-only-change-me-32bytes}
+    expiration-ms: ${JWT_EXPIRATION_MS:86400000}
+  uploads:
+    dir: ${UPLOADS_DIR:uploads}
+  match:
+    expiry-hours: 48
+
+logging:
+  level:
+    com.app.dating: INFO
