@@ -1,0 +1,10 @@
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+.env
+uploads/*
+!uploads/.gitkeep
+HELP.md
+*.iml
+.idea/
+out/
