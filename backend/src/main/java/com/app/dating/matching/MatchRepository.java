@@ -16,7 +16,7 @@ public interface MatchRepository extends JpaRepository<Match, UUID> {
 	@Query("SELECT m FROM Match m WHERE m.userAId = :userId OR m.userBId = :userId ORDER BY m.createdAt DESC")
 	List<Match> findAllForUser(@Param("userId") UUID userId);
 
-	@Modifying
+	@Modifying(clearAutomatically = true, flushAutomatically = true)
 	@Query("DELETE FROM Match m WHERE m.openingMoveDone = false AND m.expiresAt <= :now")
 	int deleteExpiredWithoutOpeningMove(@Param("now") Instant now);
 
