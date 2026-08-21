@@ -1,0 +1,16 @@
+services:
+  postgres:
+    image: postgis/postgis:16-3.4
+    container_name: dating_app_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: dating_app
+      POSTGRES_USER: dating_app
+      POSTGRES_PASSWORD: dating_app
+    ports:
+      - "5432:5432"
+    volumes:
+      - dating_app_postgres_data:/var/lib/postgresql/data
+
+volumes:
+  dating_app_postgres_data:

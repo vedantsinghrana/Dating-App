@@ -1,0 +1,74 @@
+/*
+ * Design tokens. One warm accent + neutrals, per PROJECT_PLAN.md UI direction.
+ * Light palette lives on bare :root. Dark palette is layered on twice so both
+ * "system" (prefers-color-scheme) and an explicit user toggle (data-theme) work:
+ * see ThemeProvider.tsx for how data-theme gets set on <html>.
+ */
+:root {
+  --color-accent: #ff5a76;
+  --color-accent-strong: #ff3d5e;
+  --color-accent-contrast: #ffffff;
+
+  --color-bg: #ffffff;
+  --color-surface: #f8f4f5;
+  --color-surface-raised: #ffffff;
+  --color-border: #ece3e6;
+
+  --color-text: #1a1316;
+  --color-text-muted: #6b5b60;
+  --color-text-on-accent: #ffffff;
+
+  --color-like: #2fae6e;
+  --color-pass: #e0344c;
+  --color-danger: #e0344c;
+
+  --radius-card: 20px;
+  --radius-control: 12px;
+  --radius-pill: 999px;
+
+  --shadow-card: 0 12px 30px -14px rgba(26, 19, 22, 0.35);
+  --shadow-raised: 0 2px 10px -4px rgba(26, 19, 22, 0.2);
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+
+  --font-sans:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial,
+    sans-serif;
+
+  --tab-bar-height: 64px;
+  --transition-fast: 150ms ease;
+  --transition-base: 220ms ease;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --color-bg: #141014;
+    --color-surface: #1f191c;
+    --color-surface-raised: #241d20;
+    --color-border: #2c2328;
+
+    --color-text: #f5eef0;
+    --color-text-muted: #b8a8ae;
+
+    --shadow-card: 0 12px 30px -14px rgba(0, 0, 0, 0.6);
+    --shadow-raised: 0 2px 10px -4px rgba(0, 0, 0, 0.5);
+  }
+}
+
+:root[data-theme='dark'] {
+  --color-bg: #141014;
+  --color-surface: #1f191c;
+  --color-surface-raised: #241d20;
+  --color-border: #2c2328;
+
+  --color-text: #f5eef0;
+  --color-text-muted: #b8a8ae;
+
+  --shadow-card: 0 12px 30px -14px rgba(0, 0, 0, 0.6);
+  --shadow-raised: 0 2px 10px -4px rgba(0, 0, 0, 0.5);
+}
