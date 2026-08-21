@@ -38,6 +38,7 @@ app:
     dir: ${UPLOADS_DIR:uploads}
   match:
     expiry-hours: 48
+    expiry-check-interval-ms: 900000
   discovery:
     page-size: 20
 
