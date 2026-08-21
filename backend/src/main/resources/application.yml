@@ -38,6 +38,8 @@ app:
     dir: ${UPLOADS_DIR:uploads}
   match:
     expiry-hours: 48
+  discovery:
+    page-size: 20
 
 logging:
   level:
