@@ -1,16 +1,3 @@
-# Dating-App
-Dating App which searches matches based on the users location.
-interactive interface for better user experiance.
-
-See `PROJECT_PLAN.md`, `API_CONTRACT.md`, and `WORKFLOW_AND_ROADMAP.md` for the
-full stack, endpoint contract, and repo conventions.
-
-## Web frontend
-
-The `web/` directory is the React/Vite/TypeScript client. It builds against
-`API_CONTRACT.md` and can run standalone against an in-browser mock server
-(no backend required) — see `web/README.md` for setup.
-
 # Dating App
 
 A full-stack dating app built around **where you actually are**: proximity-based matching on PostGIS, Hinge-style prompt profiles instead of a blank bio box, a required "opening move" so nobody has to read another "hey," and real-time chat over WebSocket. Java/Spring Boot backend, React web client, Android client to follow.
@@ -19,6 +6,7 @@ A full-stack dating app built around **where you actually are**: proximity-based
 ![Java](https://img.shields.io/badge/Java-21-orange)
 ![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3-brightgreen)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-PostGIS-336791)
+![React](https://img.shields.io/badge/React-Vite-61dafb)
 
 ---
 
@@ -30,7 +18,7 @@ Most portfolio dating-app clones stop at "swipe and match." This one borrows the
 - **Prompt-based profiles, not a bio box** (Hinge) — 3+ prompt/answer pairs per profile, richer and more interesting to build (and to read) than free text.
 - **A required opening move** (Bumble) — the first message in a match must respond to one of the other person's prompts, so the conversation starts from something real instead of "hey."
 - **Matches that expire** (Bumble) — an unanswered match quietly disappears after 48 hours via a scheduled job, which keeps the queue moving and doubles as a clean demo of background job processing.
-- **The swipe stack as the core loop** (Tinder) — familiar, fun, and a genuinely good front-end animation showcase.
+- **The swipe stack as the core loop** (Tinder) — familiar, fun, and a genuinely good front-end animation showcase, with a grid/browse view alongside it (Grindr-style).
 
 ## Tech stack
 
@@ -38,7 +26,7 @@ Most portfolio dating-app clones stop at "swipe and match." This one borrows the
 |---|---|---|
 | Backend | Java 21 + Spring Boot 3 (Web, Data JPA, Security, WebSocket) | One language, industry-standard combo, strong resume signal |
 | Database | PostgreSQL + PostGIS | Relational data with native geospatial radius queries |
-| Web frontend | React (Vite) | Fast iteration, clean separation from the API |
+| Web frontend | React + Vite + TypeScript | Fast iteration, clean separation from the API |
 | Mobile *(phase 3)* | Android, Kotlin | Same REST/WebSocket contract as web |
 | Auth | Spring Security + JWT | Stateless, standard, well understood |
 | Realtime | Spring WebSocket (STOMP) | Powers live chat |
@@ -54,26 +42,23 @@ dating-app/
 ├── PROJECT_PLAN.md            # stack, competitive research, feature rationale
 ├── WORKFLOW_AND_ROADMAP.md    # how we work day-to-day, and the phase-by-phase roadmap
 ├── docker-compose.yml         # postgres+postgis service for local dev
-├── backend/                   # Spring Boot API — see backend/README below (coming soon)
+├── backend/                   # Spring Boot API
 │   └── src/main/java/com/app/dating/{auth,profile,discovery,matching,chat,common}/
-└── web/                       # React client (in progress)
+└── web/                       # React/Vite/TypeScript client — see web/README.md
 ```
 
-## Getting started (backend)
+## Getting started
+
+**Backend:**
 
 ```bash
 git clone https://github.com/vedantsinghrana/Dating-App.git
 cd Dating-App
 
-# start Postgres + PostGIS
-docker compose up -d postgres
-
-# run the API
+docker compose up -d postgres   # start Postgres + PostGIS
 cd backend
-./gradlew bootRun
+./gradlew bootRun               # run the API on :8080
 ```
-
-Then confirm it's alive:
 
 ```bash
 curl http://localhost:8080/api/health
@@ -81,6 +66,8 @@ curl http://localhost:8080/api/health
 ```
 
 Run the test suite with `./gradlew test`.
+
+**Web:** see [`web/README.md`](web/README.md) — it can also run standalone against an in-browser mock server (MSW, seeded from `API_CONTRACT.md`), no backend required, via `VITE_USE_MOCKS=true`.
 
 ## API contract
 
@@ -92,12 +79,18 @@ Every endpoint — request/response shapes, error format, auth header, the WebSo
 - [x] Project skeleton, Docker Compose Postgres/PostGIS, CI, health check
 - [x] `User` / `Profile` entities and Flyway migrations (photos and prompts as related tables)
 - [x] Auth — `/api/auth/register`, `/api/auth/login`, JWT issuance, Spring Security filter chain
-- [ ] Profile endpoints (`GET/PUT /api/profiles/me`, photo upload, location update)
-- [ ] Discovery (`GET /api/discover`, PostGIS radius search, pagination)
+- [x] Profile endpoints — `GET/PUT /api/profiles/me`, photo upload, location update *(in review)*
+- [x] Discovery — `GET /api/discover`, PostGIS radius search, pagination *(in review)*
 - [ ] Swipes, match creation, 48h match-expiry job
 - [ ] Messages — REST history + WebSocket live chat, opening-move rule
 
-**Web** — not started yet.
+**Web**
+- [x] Auth screens, themeable design tokens (light/dark)
+- [x] Profile view/edit with photos and prompts
+- [x] Swipe-stack discovery with drag gestures, plus a grid/browse view
+- [x] Matches list with the enforced opening-move reply flow
+- [x] Live chat over STOMP/SockJS, with REST history fallback
+
 **Mobile** — planned for a later phase, once the web client and API have stabilized.
 
 ## Roadmap & workflow
