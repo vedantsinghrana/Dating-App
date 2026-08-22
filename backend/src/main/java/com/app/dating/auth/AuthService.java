@@ -6,6 +6,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
+
 @Service
 public class AuthService {
 
@@ -29,13 +31,14 @@ public class AuthService {
 		return new AuthResponse(jwtService.generateToken(user), user.getId().toString());
 	}
 
-	@Transactional(readOnly = true)
+	@Transactional
 	public AuthResponse login(LoginRequest request) {
 		User user = userRepository.findByEmailIgnoreCase(request.email())
 			.orElseThrow(() -> new ApiException(HttpStatus.UNAUTHORIZED, "Invalid email or password"));
 		if (!passwordEncoder.matches(request.password(), user.getPasswordHash())) {
 			throw new ApiException(HttpStatus.UNAUTHORIZED, "Invalid email or password");
 		}
+		user.setLastActiveAt(Instant.now());
 		return new AuthResponse(jwtService.generateToken(user), user.getId().toString());
 	}
 

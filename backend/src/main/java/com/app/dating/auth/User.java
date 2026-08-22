@@ -34,6 +34,9 @@ public class User {
 	@Column(name = "created_at", nullable = false, updatable = false)
 	private Instant createdAt;
 
+	@Column(name = "last_active_at")
+	private Instant lastActiveAt;
+
 	public User(String email, String passwordHash) {
 		this.email = email;
 		this.passwordHash = passwordHash;
