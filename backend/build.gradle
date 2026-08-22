@@ -13,10 +13,21 @@ java {
 	}
 }
 
+sourceSets {
+	integrationTest {
+		java.srcDir 'src/integrationTest/java'
+		resources.srcDir 'src/integrationTest/resources'
+		compileClasspath += sourceSets.main.output + sourceSets.test.output
+		runtimeClasspath += sourceSets.main.output + sourceSets.test.output
+	}
+}
+
 configurations {
 	compileOnly {
 		extendsFrom annotationProcessor
 	}
+	integrationTestImplementation.extendsFrom testImplementation
+	integrationTestRuntimeOnly.extendsFrom testRuntimeOnly
 }
 
 repositories {
@@ -69,4 +80,16 @@ dependencyManagement {
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+// Testcontainers-backed tests requiring Docker. Kept out of `test`/`check` so
+// `./gradlew test` and `./gradlew build` stay fast and Docker-independent for local
+// dev; CI runs this as an explicit separate step where Docker is available.
+tasks.register('integrationTest', Test) {
+	description = 'Runs integration tests that require Docker (Testcontainers).'
+	group = 'verification'
+	testClassesDirs = sourceSets.integrationTest.output.classesDirs
+	classpath = sourceSets.integrationTest.runtimeClasspath
+	useJUnitPlatform()
+	shouldRunAfter test
 }

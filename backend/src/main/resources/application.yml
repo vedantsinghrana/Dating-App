@@ -38,6 +38,14 @@ app:
     dir: ${UPLOADS_DIR:uploads}
   match:
     expiry-hours: 48
+    expiry-check-interval-ms: 900000
+  discovery:
+    page-size: 20
+  top-pick:
+    cron: "0 0 3 * * *"
+    weight-distance: 0.4
+    weight-prompt-overlap: 0.3
+    weight-recent-activity: 0.3
 
 logging:
   level:
