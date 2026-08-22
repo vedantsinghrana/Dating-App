@@ -6,6 +6,7 @@ import org.springframework.data.repository.Repository;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface DiscoveryRepository extends Repository<Profile, UUID> {
@@ -38,5 +39,12 @@ public interface DiscoveryRepository extends Repository<Profile, UUID> {
 		@Param("limit") int limit,
 		@Param("offset") int offset
 	);
+
+	@Query(value = """
+		SELECT ST_Distance(a.location, b.location)
+		FROM profiles a, profiles b
+		WHERE a.id = :meId AND b.id = :otherId
+		""", nativeQuery = true)
+	Optional<Double> distanceMetersBetween(@Param("meId") UUID meId, @Param("otherId") UUID otherId);
 
 }
