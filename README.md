@@ -75,14 +75,22 @@ Every endpoint — request/response shapes, error format, auth header, the WebSo
 
 ## Current status
 
-**Backend**
+**Backend — Phase 1 (MVP), all merged**
 - [x] Project skeleton, Docker Compose Postgres/PostGIS, CI, health check
 - [x] `User` / `Profile` entities and Flyway migrations (photos and prompts as related tables)
 - [x] Auth — `/api/auth/register`, `/api/auth/login`, JWT issuance, Spring Security filter chain
-- [x] Profile endpoints — `GET/PUT /api/profiles/me`, photo upload, location update *(in review)*
-- [x] Discovery — `GET /api/discover`, PostGIS radius search, pagination *(in review)*
-- [ ] Swipes, match creation, 48h match-expiry job
-- [ ] Messages — REST history + WebSocket live chat, opening-move rule
+- [x] Profile endpoints — `GET/PUT /api/profiles/me`, photo upload, location update
+- [x] Discovery — `GET /api/discover`, PostGIS radius search, pagination
+- [x] Swipes, match creation on mutual like, matches list, 48h match-expiry job
+- [x] Messages — REST history + WebSocket (STOMP/SockJS) live chat, opening-move rule
+- [x] Unit + Testcontainers integration tests (discovery radius query, match-expiry job, auth flow)
+
+**Backend — Phase 2 (engagement layer), in progress**
+- [x] Daily Top Pick — `GET /api/discover/top-pick`, scheduled scoring job *(in review)*
+- [ ] Boost
+- [ ] OAuth2 login
+- [ ] Real object storage (S3-compatible) for photos
+- [ ] Push notifications
 
 **Web**
 - [x] Auth screens, themeable design tokens (light/dark)
