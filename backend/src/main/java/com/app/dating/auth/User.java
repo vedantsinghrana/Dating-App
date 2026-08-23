@@ -25,7 +25,10 @@ public class User {
 	@GeneratedValue(strategy = GenerationType.UUID)
 	private UUID id;
 
-	@Column(nullable = false, unique = true)
+	// Uniqueness is enforced by ux_users_email, a case-insensitive index on LOWER(email) —
+	// not a plain unique constraint on this column, so `unique = true` here would make
+	// Hibernate's ddl-auto=validate fail at startup looking for a constraint that doesn't exist.
+	@Column(nullable = false)
 	private String email;
 
 	@Column(name = "password_hash", nullable = false)

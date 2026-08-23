@@ -17,7 +17,7 @@ public interface DiscoveryRepository extends Repository<Profile, UUID> {
 	 * distance ascending; fetches one extra row so the caller can compute hasMore cheaply.
 	 */
 	@Query(value = """
-		SELECT p.id AS id, ST_Distance(p.location, ST_SetSRID(ST_MakePoint(:lng, :lat), 4326)::geography) AS distanceM
+		SELECT p.id AS id, ST_Distance(p.location, ST_SetSRID(ST_MakePoint(:lng, :lat), 4326)::geography) AS "distanceM"
 		FROM profiles p
 		WHERE p.id <> :me
 		  AND p.location IS NOT NULL
@@ -28,7 +28,7 @@ public interface DiscoveryRepository extends Repository<Profile, UUID> {
 		      WHERE (m.user_a_id = :me AND m.user_b_id = p.id)
 		         OR (m.user_a_id = p.id AND m.user_b_id = :me)
 		  )
-		ORDER BY distanceM ASC
+		ORDER BY "distanceM" ASC
 		LIMIT :limit OFFSET :offset
 		""", nativeQuery = true)
 	List<DiscoveryRow> findNearby(

@@ -16,8 +16,8 @@ import java.time.Instant;
 import java.util.UUID;
 
 /**
- * userAId is always the lexicographically smaller of the two user ids (enforced by the
- * ck_matches_ordered_pair DB constraint), so a pair only ever produces one row.
+ * userAId is always the "smaller" of the two user ids per orderedPair below (enforced by
+ * the ck_matches_ordered_pair DB constraint), so a pair only ever produces one row.
  */
 @Entity
 @Table(name = "matches")
@@ -58,6 +58,17 @@ public class Match {
 
 	public UUID otherUserId(UUID viewerId) {
 		return userAId.equals(viewerId) ? userBId : userAId;
+	}
+
+	/**
+	 * java.util.UUID#compareTo compares the two halves as *signed* longs, which disagrees
+	 * with PostgreSQL's unsigned byte-wise uuid ordering whenever the compared UUIDs' sign
+	 * bits differ — violating ck_matches_ordered_pair for roughly half of all random UUID
+	 * pairs if used directly. Comparing the canonical string form instead matches Postgres.
+	 */
+	public static UUID[] orderedPair(UUID user1, UUID user2) {
+		boolean firstIsSmaller = user1.toString().compareTo(user2.toString()) < 0;
+		return firstIsSmaller ? new UUID[]{user1, user2} : new UUID[]{user2, user1};
 	}
 
 }

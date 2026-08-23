@@ -57,13 +57,12 @@ public class SwipeService {
 			return new SwipeResponse(false, null);
 		}
 
-		UUID userAId = me.compareTo(toUserId) < 0 ? me : toUserId;
-		UUID userBId = me.compareTo(toUserId) < 0 ? toUserId : me;
-		if (matchRepository.existsByUserAIdAndUserBId(userAId, userBId)) {
+		UUID[] pair = Match.orderedPair(me, toUserId);
+		if (matchRepository.existsByUserAIdAndUserBId(pair[0], pair[1])) {
 			return new SwipeResponse(false, null);
 		}
 
-		Match match = new Match(userAId, userBId, Instant.now().plus(matchExpiry));
+		Match match = new Match(pair[0], pair[1], Instant.now().plus(matchExpiry));
 		matchRepository.save(match);
 		return new SwipeResponse(true, match.getId().toString());
 	}
