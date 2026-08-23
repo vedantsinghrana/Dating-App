@@ -13,6 +13,12 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+/**
+ * Relies on Apache HttpClient5 being on the test classpath (see build.gradle) so
+ * TestRestTemplate doesn't use the JDK's HttpURLConnection-based client, which breaks a
+ * POST that gets a 401 back ("cannot retry due to server authentication, in streaming
+ * mode") — manually swapping the request factory per-test didn't reliably override it.
+ */
 class AuthFlowIntegrationTest extends AbstractIntegrationTest {
 
 	@Autowired
