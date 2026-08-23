@@ -3,6 +3,7 @@ package com.app.dating;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
+import org.springframework.test.context.TestPropertySource;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -14,9 +15,17 @@ import org.testcontainers.utility.DockerImageName;
  * queries rather than mocks. Requires Docker to be available on the host running
  * the build; GitHub Actions' ubuntu runners have it, so backend-ci.yml runs these
  * for real even in environments where a local `./gradlew test` cannot.
+ *
+ * Scheduled jobs are disabled here: MatchExpiryJob in particular uses fixedRate with no
+ * initialDelay, so in a real (non-mocked) Spring context it fires almost immediately on
+ * startup and would race against test-managed match data.
  */
 @Testcontainers
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@TestPropertySource(properties = {
+	"app.match.expiry-job.enabled=false",
+	"app.top-pick.job.enabled=false"
+})
 public abstract class AbstractIntegrationTest {
 
 	@Container

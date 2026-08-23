@@ -6,6 +6,7 @@ import com.app.dating.profile.Profile;
 import com.app.dating.profile.ProfileRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,8 +22,12 @@ import java.util.function.Function;
  * Runs once daily (default 03:00 server time) and picks, for every user with a located
  * profile, the single highest-scoring nearby candidate — see TopPickScoringService for
  * the weighting. A per-user failure is logged and skipped rather than aborting the batch.
+ *
+ * See app.top-pick.job.enabled — disabled in integration tests for determinism, same as
+ * MatchExpiryJob, even though the cron schedule makes it unlikely to fire mid-test-run.
  */
 @Component
+@ConditionalOnProperty(name = "app.top-pick.job.enabled", havingValue = "true", matchIfMissing = true)
 public class DailyTopPickJob {
 
 	private static final Logger log = LoggerFactory.getLogger(DailyTopPickJob.class);
