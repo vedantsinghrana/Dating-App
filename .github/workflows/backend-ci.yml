@@ -1,8 +1,5 @@
 name: backend-ci
 
-permissions:
-  contents: write
-
 on:
   push:
     paths:
@@ -36,22 +33,3 @@ jobs:
 
       - name: Run integration tests (Testcontainers)
         run: ./gradlew integrationTest --no-daemon
-
-      # Temporary: publishes raw JUnit failure output to a throwaway branch so it can be
-      # read as ordinary repo content — the logs/artifacts download APIs require repo
-      # admin rights, which isn't available for diagnosing this from outside the UI.
-      # Remove once the current CI failure is root-caused and fixed.
-      - name: Publish failure diagnostics
-        if: failure()
-        working-directory: .
-        run: |
-          mkdir -p /tmp/ci-diag
-          find backend/build/test-results/integrationTest -name "*.xml" -exec cp {} /tmp/ci-diag/ \; 2>/dev/null || true
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git checkout --orphan ci-diagnostics-tmp
-          git rm -rf . > /dev/null 2>&1 || true
-          cp /tmp/ci-diag/*.xml . 2>/dev/null || echo "no xml reports found" > NOTHING.txt
-          git add -A
-          git commit -m "diagnostics for run ${{ github.run_id }}"
-          git push origin ci-diagnostics-tmp:ci-diagnostics --force
