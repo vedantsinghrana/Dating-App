@@ -1,5 +1,8 @@
 name: backend-ci
 
+permissions:
+  contents: write
+
 on:
   push:
     paths:
