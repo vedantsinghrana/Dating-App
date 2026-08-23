@@ -98,9 +98,8 @@ class SwipeServiceTest {
 		when(swipeRepository.existsBySwiperIdAndSwipeeId(me, them)).thenReturn(false);
 		when(swipeRepository.findBySwiperIdAndSwipeeIdAndDirection(them, me, SwipeDirection.LIKE))
 			.thenReturn(Optional.of(new Swipe(them, me, SwipeDirection.LIKE)));
-		UUID expectedA = me.compareTo(them) < 0 ? me : them;
-		UUID expectedB = me.compareTo(them) < 0 ? them : me;
-		when(matchRepository.existsByUserAIdAndUserBId(expectedA, expectedB)).thenReturn(false);
+		UUID[] expectedPair = Match.orderedPair(me, them);
+		when(matchRepository.existsByUserAIdAndUserBId(expectedPair[0], expectedPair[1])).thenReturn(false);
 		// GenerationType.UUID assigns the id during a real persist(); assign it here
 		// the way Hibernate would, since the mock repository skips that.
 		when(matchRepository.save(any(Match.class))).thenAnswer(inv -> {

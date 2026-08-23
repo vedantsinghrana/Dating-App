@@ -66,9 +66,8 @@ class MessageServiceTest {
 	}
 
 	private Match activeMatch() {
-		UUID userAId = me.compareTo(them) < 0 ? me : them;
-		UUID userBId = me.compareTo(them) < 0 ? them : me;
-		Match match = new Match(userAId, userBId, Instant.now().plus(48, ChronoUnit.HOURS));
+		UUID[] pair = Match.orderedPair(me, them);
+		Match match = new Match(pair[0], pair[1], Instant.now().plus(48, ChronoUnit.HOURS));
 		match.setId(matchId);
 		return match;
 	}
@@ -94,9 +93,8 @@ class MessageServiceTest {
 
 	@Test
 	void sendThrowsWhenExpiredWithoutOpeningMove() {
-		UUID userAId = me.compareTo(them) < 0 ? me : them;
-		UUID userBId = me.compareTo(them) < 0 ? them : me;
-		Match match = new Match(userAId, userBId, Instant.now().minus(1, ChronoUnit.HOURS));
+		UUID[] pair = Match.orderedPair(me, them);
+		Match match = new Match(pair[0], pair[1], Instant.now().minus(1, ChronoUnit.HOURS));
 		match.setId(matchId);
 		when(matchRepository.findById(matchId)).thenReturn(Optional.of(match));
 

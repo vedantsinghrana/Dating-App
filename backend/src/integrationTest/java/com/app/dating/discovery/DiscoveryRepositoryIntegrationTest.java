@@ -69,9 +69,8 @@ class DiscoveryRepositoryIntegrationTest extends AbstractIntegrationTest {
 
 		User alreadyMatched = createUser("matched@example.com");
 		createProfile(alreadyMatched, "Matched", 12.9750, 77.5980);
-		UUID a = me.getId().compareTo(alreadyMatched.getId()) < 0 ? me.getId() : alreadyMatched.getId();
-		UUID b = me.getId().compareTo(alreadyMatched.getId()) < 0 ? alreadyMatched.getId() : me.getId();
-		matchRepository.save(new Match(a, b, Instant.now().plus(48, ChronoUnit.HOURS)));
+		UUID[] pair = Match.orderedPair(me.getId(), alreadyMatched.getId());
+		matchRepository.save(new Match(pair[0], pair[1], Instant.now().plus(48, ChronoUnit.HOURS)));
 
 		List<DiscoveryRow> results = discoveryRepository.findNearby(me.getId(), ME_LAT, ME_LNG, 5_000, 10, 0);
 
