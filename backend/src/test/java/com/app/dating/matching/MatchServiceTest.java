@@ -41,9 +41,8 @@ class MatchServiceTest {
 
 	@Test
 	void mapsOtherUserFromViewerPerspective() {
-		UUID userAId = me.compareTo(them) < 0 ? me : them;
-		UUID userBId = me.compareTo(them) < 0 ? them : me;
-		Match match = new Match(userAId, userBId, Instant.now().plus(48, ChronoUnit.HOURS));
+		UUID[] pair = Match.orderedPair(me, them);
+		Match match = new Match(pair[0], pair[1], Instant.now().plus(48, ChronoUnit.HOURS));
 		match.setId(UUID.randomUUID());
 		when(matchRepository.findAllForUser(me)).thenReturn(List.of(match));
 
@@ -65,9 +64,8 @@ class MatchServiceTest {
 
 	@Test
 	void fallsBackToPlaceholderWhenOtherProfileMissing() {
-		UUID userAId = me.compareTo(them) < 0 ? me : them;
-		UUID userBId = me.compareTo(them) < 0 ? them : me;
-		Match match = new Match(userAId, userBId, Instant.now().plus(48, ChronoUnit.HOURS));
+		UUID[] pair = Match.orderedPair(me, them);
+		Match match = new Match(pair[0], pair[1], Instant.now().plus(48, ChronoUnit.HOURS));
 		match.setId(UUID.randomUUID());
 		when(matchRepository.findAllForUser(me)).thenReturn(List.of(match));
 		when(profileRepository.findAllById(List.of(them))).thenReturn(List.of());

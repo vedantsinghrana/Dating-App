@@ -39,9 +39,8 @@ class MatchRepositoryIntegrationTest extends AbstractIntegrationTest {
 	private Match match(Instant expiresAt, boolean openingMoveDone) {
 		User userA = userRepository.save(new User(UUID.randomUUID() + "@example.com", "hashed"));
 		User userB = userRepository.save(new User(UUID.randomUUID() + "@example.com", "hashed"));
-		UUID a = userA.getId().compareTo(userB.getId()) < 0 ? userA.getId() : userB.getId();
-		UUID b = userA.getId().compareTo(userB.getId()) < 0 ? userB.getId() : userA.getId();
-		Match match = new Match(a, b, expiresAt);
+		UUID[] pair = Match.orderedPair(userA.getId(), userB.getId());
+		Match match = new Match(pair[0], pair[1], expiresAt);
 		match.setOpeningMoveDone(openingMoveDone);
 		return match;
 	}
