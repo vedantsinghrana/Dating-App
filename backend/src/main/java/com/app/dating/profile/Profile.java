@@ -19,6 +19,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.locationtech.jts.geom.Point;
+import org.springframework.data.domain.Persistable;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -26,12 +27,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Implements Persistable so Spring Data JPA's save() calls persist() for a brand-new
+ * Profile instead of merge(): the id here is assigned manually via @MapsId in the
+ * constructor (not @GeneratedValue), so it's never null even for an unsaved instance —
+ * the default "id == null means new" heuristic can't tell new from existing. createdAt is
+ * only ever set by @PrePersist, so its nullness is an honest signal of newness instead.
+ */
 @Entity
 @Table(name = "profiles")
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Profile {
+public class Profile implements Persistable<UUID> {
 
 	@Id
 	private UUID id;
@@ -87,6 +95,11 @@ public class Profile {
 	@PreUpdate
 	void onUpdate() {
 		this.updatedAt = Instant.now();
+	}
+
+	@Override
+	public boolean isNew() {
+		return createdAt == null;
 	}
 
 }
