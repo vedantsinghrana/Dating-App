@@ -12,8 +12,13 @@ spring:
     driver-class-name: org.postgresql.Driver
 
   jpa:
+    # Flyway owns the schema, not Hibernate. `validate` is deliberately not used here:
+    # Hibernate's schema validator is known to false-positive against PostGIS/expression-index
+    # columns (e.g. it expects a plain unique constraint for @Column(unique=true) and won't
+    # recognize a functional index like ux_users_email on LOWER(email)), which would abort
+    # startup on a correct schema. The integration tests exercise the real schema directly.
     hibernate:
-      ddl-auto: validate
+      ddl-auto: none
     open-in-view: false
     properties:
       hibernate:
