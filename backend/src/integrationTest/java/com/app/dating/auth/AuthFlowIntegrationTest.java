@@ -1,6 +1,7 @@
 package com.app.dating.auth;
 
 import com.app.dating.AbstractIntegrationTest;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -8,6 +9,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 
 import java.util.Map;
 
@@ -17,6 +19,17 @@ class AuthFlowIntegrationTest extends AbstractIntegrationTest {
 
 	@Autowired
 	private TestRestTemplate restTemplate;
+
+	@BeforeEach
+	void disableOutputStreaming() {
+		// The JDK's HttpURLConnection treats any 401 as an auth challenge and tries to
+		// retry the request, which fails ("cannot retry due to server authentication, in
+		// streaming mode") because the body was already sent in streaming mode. Buffering
+		// the body instead avoids that retry path entirely.
+		SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
+		requestFactory.setOutputStreaming(false);
+		restTemplate.getRestTemplate().setRequestFactory(requestFactory);
+	}
 
 	@Test
 	void registerThenLoginThenCallProtectedEndpointWithIssuedToken() {
